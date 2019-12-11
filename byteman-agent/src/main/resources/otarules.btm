@@ -1,0 +1,18 @@
+# Making sure the Byteman classes are available to every isolated classloader
+RULE org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader.<init>
+CLASS org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader
+METHOD <init>
+AT EXIT
+IF TRUE
+DO
+  $0.addURL(new URL("file:/home/jam01/.m2/repository/org/jboss/byteman/byteman/4.0.5/byteman-4.0.5.jar"));
+  traceln("from Byteman: org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader.<init>")
+ENDRULE
+
+RULE com.ning.http.client.AsyncHttpClientConfig.Builder.<init>
+CLASS com.ning.http.client.AsyncHttpClientConfig$Builder
+METHOD <init>
+AT EXIT
+IF TRUE
+DO traceln("from Byteman: com.ning.http.client.AsyncHttpClientConfig$Builder.<init>")
+ENDRULE
