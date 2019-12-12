@@ -36,8 +36,8 @@
                     <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifestEntries>
-                            <Agent-Class>io.opentracing.contrib.agent.BytemanAgent</Agent-Class>
-                            <Premain-Class>io.opentracing.contrib.agent.BytemanAgent</Premain-Class>
+                            <Agent-Class>com.jam01.mule.tests.BytemanAgent</Agent-Class>
+                            <Premain-Class>com.jam01.mule.tests.BytemanAgent</Premain-Class>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
                             <Boot-Class-Path>./${project.artifactId}.jar</Boot-Class-Path>
