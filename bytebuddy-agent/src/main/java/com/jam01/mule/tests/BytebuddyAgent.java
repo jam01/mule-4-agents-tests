@@ -30,20 +30,20 @@ public class BytebuddyAgent {
                         return builder.visit(Advice.to(AHCBuilderExit.class).on(isDefaultConstructor()));
                     }
                 })
-                .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
-                .type(hasSuperType(named("org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader")))
-                .transform(new Transformer() {
-                    public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
-                        return builder.visit(Advice.to(MuleCLOnExit.class).on(isConstructor()));
-                    }
-                })
-                .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
-                .type(not(isInterface()).and(hasSuperType(named("org.mule.runtime.module.artifact.api.classloader.ClassLoaderLookupPolicy"))))
-                .transform(new Transformer() {
-                    public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
-                        return builder.visit(Advice.to(Mule4OverrideClassLoaderLookupAdvice.class).on(named("getPackageLookupStrategy").and(takesArgument(0, String.class))));
-                    }
-                })
+//                .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
+//                .type(hasSuperType(named("org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader")))
+//                .transform(new Transformer() {
+//                    public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
+//                        return builder.visit(Advice.to(MuleCLOnExit.class).on(isConstructor()));
+//                    }
+//                })
+//                .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
+//                .type(not(isInterface()).and(hasSuperType(named("org.mule.runtime.module.artifact.api.classloader.ClassLoaderLookupPolicy"))))
+//                .transform(new Transformer() {
+//                    public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
+//                        return builder.visit(Advice.to(Mule4OverrideClassLoaderLookupAdvice.class).on(named("getPackageLookupStrategy").and(takesArgument(0, String.class))));
+//                    }
+//                })
                 .installOn(inst);
     }
 

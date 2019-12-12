@@ -1,5 +1,5 @@
 # the async http client builder is intercepted even if byteman classes are not available
-# in the isolated classloader, but if they are not the instrumentation ends up failing
+# in the isolated classloader, but if they are not then instrumentation ends up failing
 # this makes sure the Byteman classes are available to every isolated classloader
 RULE org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader.<init>
 CLASS org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader
@@ -7,8 +7,8 @@ METHOD <init>
 AT EXIT
 IF TRUE
 DO
-  $0.addURL(new URL("file:/home/jam01/.m2/repository/org/jboss/byteman/byteman/4.0.5/byteman-4.0.5.jar"));
-  traceln("from byteman: org.mule.runtime.module.artifact.api.classloader.MuleArtifactClassLoader.<init>")
+  $0.addURL(new URL("file:" + System.getenv("BM_HOME") + "/byteman-4.0.5.jar"));
+  traceln("from byteman: installed byteman into " + $0.getArtifactId() + " MuleArtifactClassLoader")
 ENDRULE
 
 RULE com.ning.http.client.AsyncHttpClientConfig.Builder.<init>
@@ -16,5 +16,15 @@ CLASS com.ning.http.client.AsyncHttpClientConfig$Builder
 METHOD <init>
 AT EXIT
 IF TRUE
-DO traceln("from byteman: com.ning.http.client.AsyncHttpClientConfig$Builder.<init>")
+DO
+  traceln("from byteman: AsyncHttpClientConfig.Builder.<init> triggered");
+ENDRULE
+
+RULE com.ning.http.client.AsyncHttpClientConfig.Builder.build
+CLASS com.ning.http.client.AsyncHttpClientConfig$Builder
+METHOD build
+AT ENTRY
+IF TRUE
+DO
+  traceln("from byteman: AsyncHttpClientConfig.Builder.build triggered");
 ENDRULE

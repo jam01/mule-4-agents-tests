@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="ae30b0ba-5c02-4d2e-be2a-d520b6e83bd4" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="java-specialagent-test-mule-4.2.2-flow" doc:id="b91e2e15-708a-4446-bae1-55f717485b32" >
+		<http:listener doc:name="Listener" doc:id="a96bfbba-fda2-44ef-bbfa-155ff8ae818f" config-ref="HTTP_Listener_config" path="/"/>
+		<http:request method="GET" doc:name="Request" doc:id="7c54c2db-6cd1-4b3c-9d6c-f47aa16fd9ae" url="https://postman-echo.com/get"/>
+	</flow>
+</mule>
