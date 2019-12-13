@@ -31,6 +31,7 @@ sleep 15
 # Triggering the requester
 curl localhost:8081/
 # Looking for the logs that the agent should've printed
+echo -e "\n"
 cat $PWD/mule-enterprise-standalone-4.2.2/logs/* | grep "from bytebuddy"
 
 $PWD/mule-enterprise-standalone-4.2.2/bin/mule stop
@@ -43,8 +44,9 @@ cp $PWD/wrapper-byteman.conf $PWD/mule-enterprise-standalone-4.2.2/conf/wrapper.
 $PWD/mule-enterprise-standalone-4.2.2/bin/mule start
 sleep 15
 
-cat $PWD/mule-enterprise-standalone-4.2.2/logs/* | grep "from byteman"
-
 curl localhost:8081/
+
+echo -e "\n"
+cat $PWD/mule-enterprise-standalone-4.2.2/logs/* | grep "from byteman"
 
 $PWD/mule-enterprise-standalone-4.2.2/bin/mule stop
