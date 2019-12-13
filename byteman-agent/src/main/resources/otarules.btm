@@ -4,5 +4,5 @@ METHOD <init>
 AT EXIT
 IF TRUE
 DO
-  traceln("from byteman: AsyncHttpClientConfig.Builder.<init> triggered");
+  traceln("from byteman: AsyncHttpClientConfig$Builder.<init> triggered: " + getClass().getClassLoader());
 ENDRULE

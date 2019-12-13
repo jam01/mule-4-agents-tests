@@ -9,7 +9,7 @@ curl --silent --remote-name https://s3.amazonaws.com/new-mule-artifacts/mule-ee-
   && unzip -uoq mule-ee-distribution-standalone-4.2.2.zip
 fi
 
-rm $PWD/mule-enterprise-standalone-4.2.2/logs/*
+rm -f $PWD/mule-enterprise-standalone-4.2.2/logs/*
 
 echo "building artifacts ..."
 mvn --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn clean package
@@ -41,7 +41,6 @@ cat $PWD/mule-enterprise-standalone-4.2.2/logs/* | grep "from bytebuddy"
 echo -e "...\n"
 
 $PWD/mule-enterprise-standalone-4.2.2/bin/mule stop
-
 
 # BYTEMAN
 echo -e "\n\n\ntesting instrumentation with byteman agent ..."
