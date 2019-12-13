@@ -42,8 +42,8 @@
                     <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifestEntries>
-                            <Agent-Class>com.jam01.mule.tests.BytebuddyAgent</Agent-Class>
-                            <Premain-Class>com.jam01.mule.tests.BytebuddyAgent</Premain-Class>
+                            <Agent-Class>com.jam01.mule.tests.ByteBuddyAgent</Agent-Class>
+                            <Premain-Class>com.jam01.mule.tests.ByteBuddyAgent</Premain-Class>
                             <Can-Redefine-Classes>true</Can-Redefine-Classes>
                             <Can-Retransform-Classes>true</Can-Retransform-Classes>
                             <Boot-Class-Path>./${project.artifactId}.jar</Boot-Class-Path>
