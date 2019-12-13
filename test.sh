@@ -5,14 +5,14 @@ set -o errexit
 if [ ! -d "./mule-enterprise-standalone-4.2.2" ]
 then
 echo "downloading and unzipping mule ee 4.2.2 ..."
-curl -OJ https://s3.amazonaws.com/new-mule-artifacts/mule-ee-distribution-standalone-4.2.2.zip \
+curl --silent --remote-name https://s3.amazonaws.com/new-mule-artifacts/mule-ee-distribution-standalone-4.2.2.zip \
   && unzip -uoq mule-ee-distribution-standalone-4.2.2.zip
 fi
 
 rm $PWD/mule-enterprise-standalone-4.2.2/logs/*
 
 echo "building artifacts ..."
-mvn clean package
+mvn --batch-mode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn clean package
 
 # Setting up env variables that the wrapper.conf file will use to set the javaagent
 export BM_HOME=$PWD/byteman-agent/target/
@@ -34,7 +34,7 @@ $PWD/mule-enterprise-standalone-4.2.2/bin/mule start
 sleep 15
 
 # Triggering the requester
-curl localhost:8081/
+curl --silent localhost:8081/
 # Looking for the logs that the agent should've printed
 echo -e "\n\nsearching logs for agent messages ..."
 cat $PWD/mule-enterprise-standalone-4.2.2/logs/* | grep "from bytebuddy"
@@ -51,7 +51,7 @@ cp $PWD/wrapper-byteman.conf $PWD/mule-enterprise-standalone-4.2.2/conf/wrapper.
 $PWD/mule-enterprise-standalone-4.2.2/bin/mule start
 sleep 15
 
-curl localhost:8081/
+curl --silent localhost:8081/
 
 echo -e "\n\nsearching logs for agent messages ..."
 cat $PWD/mule-enterprise-standalone-4.2.2/logs/* | grep "from byteman"
