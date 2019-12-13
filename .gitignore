@@ -5,3 +5,5 @@ target/
 .settings
 .idea/
 *.iml
+mule-enterprise-standalone-4.2.2/*
+mule-ee-distribution-standalone-4.2.2.zip

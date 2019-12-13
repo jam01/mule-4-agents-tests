@@ -2,6 +2,7 @@ package com.jam01.mule.tests;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.util.HashMap;
@@ -21,6 +22,22 @@ import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.utility.JavaModule;
 
 public class ByteBuddyAgent {
+  private static final AgentBuilder.LocationStrategy locationStrategy;
+
+  static {
+    File agentJarFile = new File(System.getenv("BB_HOME") + "/bytebuddy-agent.jar");
+    AgentBuilder.LocationStrategy strategy = null;
+    try {
+      strategy = AgentBuilder.LocationStrategy.ForClassLoader.WEAK.withFallbackTo(
+              ClassFileLocator.ForJarFile.of(agentJarFile),
+              new RootPackageCustomLocator(ClassFileLocator.ForClassLoader.ofBootLoader(), "java.", "javax."));
+    } catch (IOException e) {
+      log("Failed to add ClassFileLocator for the agent jar. Some instrumentations may not work", e);
+    }
+
+    locationStrategy = strategy;
+  }
+
   private static void log(final String message, final Throwable t) {
     System.err.println(message);
     if (t != null && t instanceof IllegalStateException && t.getMessage().startsWith("Cannot resolve type description for "))
@@ -43,6 +60,7 @@ public class ByteBuddyAgent {
       .with(RedefinitionStrategy.RETRANSFORMATION)
       .with(InitializationStrategy.NoOp.INSTANCE)
       .with(TypeStrategy.Default.REDEFINE)
+      .with(locationStrategy)
       .with(new AgentBuilder.Listener() {
         public void onDiscovery(final String typeName, final ClassLoader classLoader, final JavaModule module, final boolean loaded) {
           log("Event::onDiscovery(" + typeName + ", " + getNameId(classLoader) + ", " + module + ", " + loaded + ")");
@@ -72,46 +90,10 @@ public class ByteBuddyAgent {
       .installOn(inst);
   }
 
-  public static final CachedClassFileLocator cachedLocator;
-
-  static {
-    try {
-      cachedLocator = new CachedClassFileLocator(ClassFileLocator.ForClassLoader.ofSystemLoader(), String.class);
-    }
-    catch (final IOException e) {
-      throw new ExceptionInInitializerError(e);
-    }
-  }
-
-  private static class CachedClassFileLocator implements ClassFileLocator {
-    private final Map<String,Resolution> map = new HashMap<String,Resolution>();
-
-    public CachedClassFileLocator(final ClassFileLocator classFileLocator, final Class<?> ... classes) throws IOException {
-      if (classes == null)
-        return;
-
-      for (int i = 0; i < classes.length; ++i) {
-        final Class<?> cls = classes[i];
-        Resolution resolution = classFileLocator.locate(cls.getName());
-        if (resolution instanceof ClassFileLocator.Resolution.Illegal)
-          resolution = ClassFileLocator.ForClassLoader.of(cls.getClassLoader()).locate(cls.getName());
-
-        map.put(cls.getName(), resolution);
-      }
-    }
-
-    public void close() throws IOException {
-    }
-
-    public Resolution locate(final String name) throws IOException {
-      return map.get(name);
-    }
-  }
-
   public static class AHCBuilderExit {
     @Advice.OnMethodExit
     public static void exit(final @Advice.Origin String origin, final @Advice.This Object thiz) {
-      System.out.println("from byteman: AsyncHttpClientConfig$Builder.<init> triggered");
+      System.out.println("from bytebuddy: AsyncHttpClientConfig$Builder.<init> triggered");
     }
   }
 }

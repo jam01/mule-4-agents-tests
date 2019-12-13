@@ -13,7 +13,7 @@
 
 
     <properties>
-        <version.bytebuddy>1.10.2</version.bytebuddy>
+        <version.bytebuddy>1.10.5</version.bytebuddy>
     </properties>
 
     <dependencies>
