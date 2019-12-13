@@ -2,12 +2,16 @@
 
 set -o errexit
 
-PWD=`dirname $0`
+if [ ! -d "./mule-enterprise-standalone-4.2.2" ]
+then
+echo "downloading and unzipping mule ee 4.2.2 ..."
+curl -OJ https://s3.amazonaws.com/new-mule-artifacts/mule-ee-distribution-standalone-4.2.2.zip \
+  && unzip -uoq mule-ee-distribution-standalone-4.2.2.zip
+fi
 
-#curl -OJ https://s3.amazonaws.com/new-mule-artifacts/mule-ee-distribution-standalone-4.2.2.zip \
-#  && unzip -uoq mule-ee-distribution-standalone-4.2.2.zip
 rm $PWD/mule-enterprise-standalone-4.2.2/logs/*
 
+echo "building artifacts ..."
 mvn clean package
 
 # Setting up env variables that the wrapper.conf file will use to set the javaagent
@@ -20,6 +24,7 @@ cp $PWD/java-specialagent-test-mule-4.2.2/target/java-specialagent-test-mule-4.2
 
 
 # BYTEBUDDY
+echo -e "\n\n\ntesting instrumentation with bytebuddy agent ..."
 # Copying a wrapper.conf configured to use bytebuddy-agent.jar
 rm $PWD/mule-enterprise-standalone-4.2.2/conf/wrapper.conf
 cp $PWD/wrapper-bytebuddy.conf $PWD/mule-enterprise-standalone-4.2.2/conf/wrapper.conf
@@ -31,13 +36,15 @@ sleep 15
 # Triggering the requester
 curl localhost:8081/
 # Looking for the logs that the agent should've printed
-echo -e "\n"
+echo -e "\n\nsearching logs for agent messages ..."
 cat $PWD/mule-enterprise-standalone-4.2.2/logs/* | grep "from bytebuddy"
+echo -e "...\n"
 
 $PWD/mule-enterprise-standalone-4.2.2/bin/mule stop
 
 
 # BYTEMAN
+echo -e "\n\n\ntesting instrumentation with byteman agent ..."
 rm $PWD/mule-enterprise-standalone-4.2.2/conf/wrapper.conf
 cp $PWD/wrapper-byteman.conf $PWD/mule-enterprise-standalone-4.2.2/conf/wrapper.conf
 
@@ -46,7 +53,8 @@ sleep 15
 
 curl localhost:8081/
 
-echo -e "\n"
+echo -e "\n\nsearching logs for agent messages ..."
 cat $PWD/mule-enterprise-standalone-4.2.2/logs/* | grep "from byteman"
+echo -e "...\n"
 
 $PWD/mule-enterprise-standalone-4.2.2/bin/mule stop
